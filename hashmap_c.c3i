@@ -1,0 +1,73 @@
+module hashmap_c;
+
+alias HashMap = void;
+
+alias HashFn = fn ulong(void *item,ulong seed0,ulong seed1);
+alias CompareFn = fn CInt(void *a,void *b,void *udata);
+alias FreeFn = fn void(void *item);
+alias MallocFn = fn void*(usz size);
+alias ReallocFn = fn void*(void *ptr,usz size);
+alias IterFn = fn CBool(void *item,void *udata);
+
+fn HashMap *new(usz elsize,
+		usz cap,
+		ulong seed0,
+		ulong seed1,
+		HashFn hash,
+		CompareFn compare,
+		FreeFn elfree,
+		void *udata) @cname("hashmap_new");
+
+fn HashMap *
+new_with_allocator(MallocFn malloc,
+		   ReallocFn realloc,
+		   FreeFn free,
+		   usz elsize,
+		   usz cap,
+		   ulong seed0,
+		   ulong seed1,
+		   HashFn hash,
+		   CompareFn compare,
+		   FreeFn elfree) @cname("hashmap_new_with_allocator");
+
+extern fn void hashmap_free(HashMap* map);
+extern fn void hashmap_clear(HashMap* map,CBool update_cap);
+extern fn usz hashmap_count(HashMap* map);
+extern fn CBool hashmap_oom(HashMap* map);
+extern fn void *hashmap_get(HashMap* map,void *item);
+extern fn void *hashmap_set(HashMap* map,void *item);
+extern fn void *hashmap_delete(HashMap* map,void *item);
+extern fn void *hashmap_probe(HashMap* map,ulong position);
+extern fn CBool hashmap_scan(HashMap* map,IterFn iter,void *udata);
+extern fn CBool hashmap_iter(HashMap* map,usz *i,void **item);
+
+fn ulong sip(void *data,
+	     usz len,
+	     ulong seed0,
+	     ulong seed1) @cname("hashmap_sip");
+fn ulong murmur(void *data,
+		usz len,
+		ulong seed0,
+		ulong seed1) @cname("hashmap_murmur");
+fn ulong xxhash3(void *data,
+		 usz len,
+		 ulong seed0,
+		 ulong seed1) @cname("hashmap_xxhash3");
+
+extern fn void *hashmap_get_with_hash(HashMap* map,
+				      void *key,
+				      ulong hash);
+extern fn void *hashmap_delete_with_hash(HashMap* map,
+					 void *key,
+					 ulong hash);
+extern fn void *hashmap_set_with_hash(HashMap* map,
+				      void *item,
+				      ulong hash);
+extern fn void hashmap_set_grow_by_power(HashMap* map,
+					 usz power);
+extern fn void hashmap_set_load_factor(HashMap* map,
+				       double load_factor);
+
+extern fn usz hashmap_nbuckets(HashMap* map);
+extern fn void *hashmap_bucket_item(HashMap* map,usz i);
+
