@@ -1,5 +1,5 @@
 # hashmap_c.c3l
-hashmap.c binding for C3
+[hashmap.c](https://github.com/tidwall/hashmap.c) binding for C3
 
 # Usage
 ```c3
